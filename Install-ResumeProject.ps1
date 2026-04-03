@@ -118,7 +118,7 @@ Copy-Item "$ScriptDir\CLAUDE.md" "$InstallPath\CLAUDE.md" -Force
 Write-Host "  [+] Installed: CLAUDE.md" -ForegroundColor Green
 
 # SKILL.md
-Copy-Item "$ScriptDir\resume-customization\SKILL.md" "$InstallPath\skills\resume-customization\SKILL.md" -Force
+Copy-Item "$ScriptDir\skills\resume-customization\SKILL.md" "$InstallPath\skills\resume-customization\SKILL.md" -Force
 Write-Host "  [+] Installed: skills\resume-customization\SKILL.md" -ForegroundColor Green
 
 Write-Host ""
@@ -296,21 +296,57 @@ Write-Host ""
 Write-Host "  Project installed to:" -ForegroundColor White
 Write-Host "    $InstallPath" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  Next steps:" -ForegroundColor White
-Write-Host "    1. Drop your resume into:       _documents\resume\" -ForegroundColor Gray
-Write-Host "    2. Drop your target JD(s) into: _documents\job-descriptions\" -ForegroundColor Gray
-Write-Host "    3. (Optional) Add context to:   _documents\context\" -ForegroundColor Gray
-Write-Host "    4. In Claude Cowork or a Claude.ai Project:" -ForegroundColor Gray
-Write-Host "         - Point to CLAUDE.md as your project instructions" -ForegroundColor Gray
-Write-Host "         - Install the skill from:  skills\resume-customization\SKILL.md" -ForegroundColor Gray
-Write-Host "    5. Enable recommended connectors (see CONNECTORS.md)" -ForegroundColor Gray
-Write-Host "    6. Start a session and provide your resume + job posting" -ForegroundColor Gray
+
+# ─── Document staging ────────────────────────────────────────────────────────
+
+Write-Host "  ── Step A: Stage Your Documents ────────────────────────" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "  Before starting a session, copy your files into:" -ForegroundColor White
+Write-Host ""
+Write-Host "    _documents\resume\          <- your current resume (.docx / .pdf / .txt)" -ForegroundColor Gray
+Write-Host "    _documents\job-descriptions\ <- target JD(s) (.txt / .pdf)" -ForegroundColor Gray
+Write-Host "    _documents\context\          <- optional: archetype notes, branding, etc." -ForegroundColor Gray
 Write-Host ""
 
-# Open the install folder in Explorer
+# ─── Claude Cowork setup ─────────────────────────────────────────────────────
+
+Write-Host "  ── Step B: Set Up the Project in Claude Cowork ─────────" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "  Follow these steps inside the Claude desktop app:" -ForegroundColor White
+Write-Host ""
+Write-Host "   1. Open Claude Cowork." -ForegroundColor Gray
+Write-Host "   2. Click the project list (left sidebar) and choose" -ForegroundColor Gray
+Write-Host "      '+ New Project'." -ForegroundColor Gray
+Write-Host "   3. Name the project (e.g. 'Resume Customization')." -ForegroundColor Gray
+Write-Host "   4. In the project settings, find 'Project Instructions'" -ForegroundColor Gray
+Write-Host "      and paste the full text of CLAUDE.md, or point it to:" -ForegroundColor Gray
+Write-Host "        $InstallPath\CLAUDE.md" -ForegroundColor Cyan
+Write-Host "   5. Open the Skills section (or Extensions / Tools)" -ForegroundColor Gray
+Write-Host "      and add the skill file from:" -ForegroundColor Gray
+Write-Host "        $InstallPath\skills\resume-customization\SKILL.md" -ForegroundColor Cyan
+Write-Host "   6. Enable any recommended connectors (see CONNECTORS.md)." -ForegroundColor Gray
+Write-Host "   7. Upload your resume and JD files (or point Claude to the" -ForegroundColor Gray
+Write-Host "      _documents\ folder) and start your session." -ForegroundColor Gray
+Write-Host ""
+
+# ─── Launch options ───────────────────────────────────────────────────────────
+
 $OpenFolder = Read-Host "  Open project folder in Explorer? (Y/N)"
 if ($OpenFolder -match '^[Yy]') {
     Start-Process explorer.exe $InstallPath
+}
+
+Write-Host ""
+$LaunchCowork = Read-Host "  Launch Claude Cowork now? (Y/N)"
+if ($LaunchCowork -match '^[Yy]') {
+    try {
+        Start-Process "shell:AppsFolder\Claude_pzs8sxrjxfjjc!Claude"
+        Write-Host ""
+        Write-Host "  Claude is opening — follow Step B above to finish setup." -ForegroundColor Cyan
+    } catch {
+        Write-Host ""
+        Write-Host "  Could not launch Claude automatically. Open it from the Start menu." -ForegroundColor Yellow
+    }
 }
 
 Write-Host ""

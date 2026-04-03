@@ -37,7 +37,7 @@ echo ""
 # ── Validate source files ──────────────────────────────────────────────────────
 REQUIRED_FILES=(
     "$SCRIPT_DIR/CLAUDE.md"
-    "$SCRIPT_DIR/resume-customization/SKILL.md"
+    "$SCRIPT_DIR/skills/resume-customization/SKILL.md"
 )
 
 for f in "${REQUIRED_FILES[@]}"; do
@@ -111,7 +111,7 @@ echo ""
 cp "$SCRIPT_DIR/CLAUDE.md" "$INSTALL_PATH/CLAUDE.md"
 echo -e "${GREEN}  [+] Installed: CLAUDE.md${RESET}"
 
-cp "$SCRIPT_DIR/resume-customization/SKILL.md" \
+cp "$SCRIPT_DIR/skills/resume-customization/SKILL.md" \
    "$INSTALL_PATH/skills/resume-customization/SKILL.md"
 echo -e "${GREEN}  [+] Installed: skills/resume-customization/SKILL.md${RESET}"
 
@@ -276,20 +276,53 @@ echo ""
 echo -e "${BOLD}  Project installed to:${RESET}"
 echo -e "${CYAN}    $INSTALL_PATH${RESET}"
 echo ""
-echo -e "${BOLD}  Next steps:${RESET}"
-echo -e "${GRAY}    1. Drop your resume into:       _documents/resume/${RESET}"
-echo -e "${GRAY}    2. Drop your target JD(s) into: _documents/job-descriptions/${RESET}"
-echo -e "${GRAY}    3. (Optional) Add context to:   _documents/context/${RESET}"
-echo -e "${GRAY}    4. In Claude Cowork or a Claude.ai Project:${RESET}"
-echo -e "${GRAY}         - Point to CLAUDE.md as your project instructions${RESET}"
-echo -e "${GRAY}         - Install the skill from:  skills/resume-customization/SKILL.md${RESET}"
-echo -e "${GRAY}    5. Enable recommended connectors (see CONNECTORS.md)${RESET}"
-echo -e "${GRAY}    6. Start a session and provide your resume + job posting${RESET}"
+
+# ── Document staging ──────────────────────────────────────────────────────────
+echo -e "${YELLOW}  ── Step A: Stage Your Documents ────────────────────────${RESET}"
+echo ""
+echo -e "${BOLD}  Before starting a session, copy your files into:${RESET}"
+echo ""
+echo -e "${GRAY}    _documents/resume/           <- your current resume (.docx / .pdf / .txt)${RESET}"
+echo -e "${GRAY}    _documents/job-descriptions/ <- target JD(s) (.txt / .pdf)${RESET}"
+echo -e "${GRAY}    _documents/context/           <- optional: archetype notes, branding, etc.${RESET}"
 echo ""
 
+# ── Claude Cowork setup ───────────────────────────────────────────────────────
+echo -e "${YELLOW}  ── Step B: Set Up the Project in Claude Cowork ─────────${RESET}"
+echo ""
+echo -e "${BOLD}  Follow these steps inside the Claude desktop app:${RESET}"
+echo ""
+echo -e "${GRAY}   1. Open Claude Cowork.${RESET}"
+echo -e "${GRAY}   2. Click the project list (left sidebar) and choose${RESET}"
+echo -e "${GRAY}      '+ New Project'.${RESET}"
+echo -e "${GRAY}   3. Name the project (e.g. 'Resume Customization').${RESET}"
+echo -e "${GRAY}   4. In the project settings, find 'Project Instructions'${RESET}"
+echo -e "${GRAY}      and paste the full text of CLAUDE.md, or point it to:${RESET}"
+echo -e "${CYAN}        $INSTALL_PATH/CLAUDE.md${RESET}"
+echo -e "${GRAY}   5. Open the Skills section (or Extensions / Tools)${RESET}"
+echo -e "${GRAY}      and add the skill file from:${RESET}"
+echo -e "${CYAN}        $INSTALL_PATH/skills/resume-customization/SKILL.md${RESET}"
+echo -e "${GRAY}   6. Enable any recommended connectors (see CONNECTORS.md).${RESET}"
+echo -e "${GRAY}   7. Upload your resume and JD files (or point Claude to the${RESET}"
+echo -e "${GRAY}      _documents/ folder) and start your session.${RESET}"
+echo ""
+
+# ── Launch options ────────────────────────────────────────────────────────────
 read -rp "  Open project folder in Finder? (y/N): " OPEN_FINDER
 if [[ "$OPEN_FINDER" =~ ^[Yy]$ ]]; then
     open "$INSTALL_PATH"
+fi
+
+echo ""
+read -rp "  Launch Claude Cowork now? (y/N): " LAUNCH_COWORK
+if [[ "$LAUNCH_COWORK" =~ ^[Yy]$ ]]; then
+    if open -a Claude 2>/dev/null; then
+        echo ""
+        echo -e "${CYAN}  Claude is opening — follow Step B above to finish setup.${RESET}"
+    else
+        echo ""
+        echo -e "${YELLOW}  Could not launch Claude automatically. Open it from the Applications folder.${RESET}"
+    fi
 fi
 
 echo ""
