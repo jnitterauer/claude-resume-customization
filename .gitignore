@@ -1,0 +1,31 @@
+# User document staging — never commit personal resumes or JDs
+_documents/resume/
+_documents/job-descriptions/
+_documents/context/
+
+# Generated outputs — never commit personal resume files
+_output/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
