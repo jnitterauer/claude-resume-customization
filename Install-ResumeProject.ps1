@@ -37,7 +37,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $RequiredFiles = @(
     "$ScriptDir\CLAUDE.md",
-    "$ScriptDir\resume-customization\SKILL.md"
+    "$ScriptDir\skills\resume-customization\SKILL.md"
 )
 
 foreach ($File in $RequiredFiles) {
