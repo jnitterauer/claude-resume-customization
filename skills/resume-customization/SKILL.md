@@ -25,9 +25,33 @@ Collect these before starting. If any are missing, ask for them before proceedin
    - In Cowork: check `_documents\resume\` first.
    - In Claude.ai: accept as upload or paste.
 2. **Target Job Title** — The exact role being pursued.
-3. **Target Job Description(s)** — Full JD text or URL(s).
-   - If URL: fetch the full posting content before analysis. Do not proceed on a partial read.
-   - In Cowork: check `_documents\job-descriptions\` first.
+3. **Target Job Description(s)** — Full JD text, URL(s), or entries in the job queue file.
+   - In Cowork: check `_documents\job-descriptions\` for uploaded JD files and check the **job queue file** (see below) before prompting the user.
+
+#### Job Queue File — `_documents\job-descriptions\job-queue.md`
+
+This file is the canonical list of jobs to process. The skill reads it on every run and maintains it automatically.
+
+**Format:**
+```
+# Job Queue
+
+| URL | Company | Title | Status | Cached File | Fetched |
+|-----|---------|-------|--------|-------------|---------|
+| https://linkedin.com/jobs/view/123 | Brightside Health | VP, Information Security | ✅ Downloaded | Brightside_VP-InfoSec_JD.md | 2026-04-07 16:30 UTC |
+| https://linkedin.com/jobs/view/456 | Acme Corp | CISO | ⏳ Pending | — | — |
+| https://linkedin.com/jobs/view/789 | Some Co | VP IT | ❌ Failed | — | 2026-04-07 17:00 UTC |
+```
+
+**Status values:** `⏳ Pending` · `✅ Downloaded` · `❌ Failed`
+
+**Skill behavior:**
+- If the file does not exist, create it with the header row when URLs are first provided.
+- When the user provides URLs (in chat or via the job descriptions folder), append any new ones to the queue as `⏳ Pending` — skip duplicates.
+- Before fetching any URL, check if its row is already `✅ Downloaded` and a cached file exists in `_documents\job-descriptions\data\`. If so, read from cache — do not re-fetch.
+- After a successful fetch, save the full JD as `[CompanyShortName]_[TitleSlug]_JD.md` in `_documents\job-descriptions\data\` (include source URL and fetch timestamp as a header), then update the queue row: set status to `✅ Downloaded`, fill in the cached filename, and record the UTC timestamp.
+- If a fetch fails, set status to `❌ Failed` and record the attempt timestamp. Retry on next run.
+- Do not proceed on a partial read of any posting.
 4. **Additional Context (optional)** — Archetype research, personal branding notes, LinkedIn About draft.
 
 Once all inputs are confirmed, acknowledge and begin immediately.
@@ -198,6 +222,8 @@ After completing all six steps, confirm delivery of three files **per job**:
 | `[LastName]_[Company]_Report.docx` | Full five-part report for this JD | Word (.docx) |
 
 When multiple JDs are processed, each job produces its own set of three files. In Cowork, all files are saved to `_output\`. Provide a direct link to each file, grouped by job.
+
+Additionally, any job descriptions fetched from URLs are cached to `_documents\job-descriptions\data\` and will be reused automatically on future runs — no re-fetching needed.
 
 ---
 
