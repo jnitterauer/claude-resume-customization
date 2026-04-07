@@ -1,41 +1,21 @@
 ---
 name: resume-customization
 description: >
-  Executive resume optimizer and ATS strategist for C-suite and senior leadership roles.
-  Performs a full gap analysis, rewrites the resume section-by-section with achievement-oriented
-  bullets and strategic keyword integration, and delivers a five-part report (Gap Analysis,
-  Strategic Rationale, Optimized Resume, Remaining Gaps, and Elevator Pitch offer).
-  Automatically generates a professionally formatted .docx file as the final deliverable.
-
-  USE THIS SKILL whenever the user provides a resume and a job description or job posting URL,
-  asks to "tailor my resume," "optimize my resume," "rewrite my resume for this role,"
-  "apply to this job," "do a gap analysis," or pastes a job posting and asks what to do with it.
-  Also trigger for requests like "help me apply," "make my resume ATS-friendly," "update my resume
-  for this position," or any combination of resume + job description inputs — even if the user
-  doesn't use the word "skill." Always trigger when both a resume and a target role are present.
+  Executive resume optimizer and ATS strategist for C-suite and senior leadership roles. Performs
+  a full gap analysis and rewrites the resume section-by-section with achievement-oriented bullets
+  and strategic keyword integration. When multiple job descriptions are provided, runs the full
+  cycle independently for each one — producing one laser-focused resume per posting. Automatically
+  generates three deliverables per job: resume .docx, report .docx, and report .md. USE THIS SKILL
+  whenever the user provides a resume and a job description or URL, asks to "tailor my resume,"
+  "optimize my resume," "apply to this job," or "do a gap analysis." Always trigger when both a
+  resume and a target role are present.
 ---
 
 # Resume Customization Skill
 
-Full-cycle executive resume optimization: gap analysis → rewrite → Word document delivery.
+Full-cycle executive resume optimization: gap analysis → rewrite → three output files delivered automatically.
 
 ---
-
-## Role & Persona
-
-You are an expert-level **career coach, executive branding specialist, and resume strategist** with deep expertise in Applicant Tracking Systems (ATS) and modern C-suite recruitment practices. Your goal is to function as a high-end optimization engine for professional resumes and personal branding. Every change must satisfy both keyword-matching algorithms and the readability expectations of a hiring manager or board member. Frame the candidate as a strategic problem-solver and business value architect — not just a functional operator.
-
----
-
-## Context & Goal
-
-**Optional setup:** Before running this skill, consider conducting a Deep Research analysis to identify the optimal resume layout, keywords, and formatting for the target role. Attach that report as Additional Context (Input 4).
-
-**Disclaimer:** Thoroughly review and validate the accuracy of the revised resume before using it in any job application. Falsifying or misrepresenting competencies is not recommended — ensure the output accurately reflects the candidate's experience and qualifications.
-
----
-
-<instructions>
 
 ## Inputs
 
@@ -51,6 +31,8 @@ Collect these before starting. If any are missing, ask for them before proceedin
 4. **Additional Context (optional)** — Archetype research, personal branding notes, LinkedIn About draft.
 
 Once all inputs are confirmed, acknowledge and begin immediately.
+
+> **Multiple JDs:** If more than one job description is provided, run the full optimization cycle independently for each JD — producing one complete, laser-focused resume per posting. Do not blend or average across jobs. In Cowork, use parallel subagents (one per JD). In Claude.ai Projects, run sequentially. Group all output files by job when presenting results.
 
 ---
 
@@ -97,13 +79,18 @@ Rewrite section by section per the rules below.
 ### Step 4 — Final Review
 Compare the Optimized Resume to the JD. Identify any skills that could not be integrated. Output in **Part 4**.
 
-### Step 5 — Generate .docx File
+### Step 5 — Generate Resume .docx
 
-After the five-part report, automatically generate a Word document. No user prompt needed.
+After the five-part report, automatically generate a formatted Word document of the resume only. No user prompt needed.
 
 **Runtime path:**
 - Cowork: save to `_output\` subfolder of this project install directory.
 - Claude.ai: save to `/mnt/user-data/outputs/` and present with `present_files`.
+
+**Filename convention:** `[LastName]_[CompanyShortName]_Resume_Optimized.docx`
+(e.g., `Smith_Acme_Resume_Optimized.docx`)
+
+Use the hiring company's name (shortened if needed) rather than the job title — this makes files instantly distinguishable when multiple resumes are generated in one session.
 
 **Document specs:**
 - npm package: `docx` (`npm install docx` if needed)
@@ -130,9 +117,91 @@ After the five-part report, automatically generate a Word document. No user prom
 - Use `WidthType.DXA` for all widths — never PERCENTAGE
 - Validate the file after generation. Fix any errors before delivering.
 
+### Step 6 — Save Full Report as Markdown and Word
+
+After the resume .docx is validated, automatically save the complete five-part report in two additional formats. No user prompt needed.
+
+#### 6a — Markdown Report (.md)
+
+Write the full five-part report to a `.md` file in the output folder.
+
+**Filename convention:** `[LastName]_[CompanyShortName]_Report.md`
+(e.g., `Smith_Acme_Report.md`)
+
+**Content:** The complete five-part report exactly as delivered in the chat — all five parts in sequence, with all tables, bullets, and formatting intact. Prepend a metadata header:
+
+```
+# Resume Optimization Report
+**Candidate:** [Full Name]
+**Target Role:** [Target Job Title]
+**Date:** [Today's date]
+**Jobs Analyzed:** [List of company names and job titles]
+---
+```
+
+Then append Parts 1 through 5 in full.
+
+#### 6b — Word Report (.docx)
+
+Generate a professionally formatted Word document of the full five-part report using the `docx` npm library.
+
+**Filename convention:** `[LastName]_[CompanyShortName]_Report.docx`
+(e.g., `Smith_Acme_Report.docx`)
+
+**Runtime path:** Same as resume — `_output\` in Cowork, `/mnt/user-data/outputs/` in Claude.ai.
+
+**Document specs:**
+- Page size: US Letter (`width: 12240, height: 15840` DXA)
+- Margins: `top: 1080, bottom: 1080, left: 1440, right: 1440` (0.75 in top/bottom, 1 in left/right)
+- Default font: Calibri, 11pt
+
+**Styling rules:**
+
+| Element | Style |
+|---|---|
+| Document title ("Resume Optimization Report") | Bold, 20pt, centered, color `#2E75B6` |
+| Metadata block (Candidate, Role, Date, Jobs) | 10pt, left-aligned, color `#555555` |
+| Horizontal rule after metadata | `BorderStyle.SINGLE, size: 6, color: "2E75B6"` as paragraph bottom border |
+| Part headings ("Part 1: Gap Analysis Report", etc.) | Bold, 14pt, color `#2E75B6`, bottom border (`BorderStyle.SINGLE, size: 4, color: "AAAAAA"`), spacing before: 240 |
+| Sub-headings within parts (e.g., "High Priority") | Bold, 11pt, color `#2E75B6` |
+| Body text / prose paragraphs | 11pt, justified, spacing after: 120 |
+| Bullet points | `LevelFormat.BULLET`, indent `left: 360, hanging: 180`, spacing after: 60 |
+| Tables (Hard Skill Table, Opportunities Table) | Full-width (`WidthType.DXA, 10080`), header row bold with light blue fill (`color: "DEEAF1"`), `ShadingType.CLEAR` |
+| Part 3 resume text | Rendered as formatted body text — job titles bold, company/date lines normal weight, bullets indented — not as raw markdown |
+
+**Table column widths (Hard Skill Table):**
+- Priority: 1200 DXA
+- Skill/Competency: 5400 DXA
+- Relevant Jobs: 3480 DXA
+
+**Table column widths (Opportunities for Improvement):**
+- Priority: 1200 DXA
+- Missing Skill/Competency: 3000 DXA
+- Recommendation: 5880 DXA
+
+**General rules (same as resume .docx):**
+- Never use `\n` in a TextRun — use separate Paragraph elements
+- Never use unicode bullet characters — use `LevelFormat.BULLET`
+- Use `WidthType.DXA` for all widths
+- Validate the file after generation. Fix any errors before delivering.
+
 ---
 
-## Final Output — Five Parts (deliver in this exact order)
+## Output File Summary
+
+After completing all six steps, confirm delivery of three files **per job**:
+
+| File | Contents | Format |
+|---|---|---|
+| `[LastName]_[Company]_Resume_Optimized.docx` | Optimized resume — tailored to this specific JD | Word (.docx) |
+| `[LastName]_[Company]_Report.md` | Full five-part report for this JD | Markdown (.md) |
+| `[LastName]_[Company]_Report.docx` | Full five-part report for this JD | Word (.docx) |
+
+When multiple JDs are processed, each job produces its own set of three files. In Cowork, all files are saved to `_output\`. Provide a direct link to each file, grouped by job.
+
+---
+
+## Final Output — Five Parts (deliver in chat in this exact order)
 
 ### Part 1: Gap Analysis Report
 - **High Priority (Essential):** Missing required skills — why it matters + integration suggestion
@@ -156,45 +225,8 @@ Offer to generate a customized Elevator Pitch using The Breakthrough Formula:
 
 Ask the user if they want one or two tailored versions to complement the new resume.
 
-</instructions>
-
----
-
-## Examples
-
-<examples>
-
-**Elevator Pitch — The Breakthrough Formula Applied**
-
-Scenario: VP of Information Security targeting a CISO role at a mid-market financial services firm.
-
-*"I help mid-market financial services firms achieve board-level cyber risk confidence without the cost of a full-time C-suite hire — by serving as a Fractional CISO who translates technical risk into P&L language your CFO actually understands."*
-
----
-
-**Sample Core Competencies Line**
-
-`Enterprise Risk Management | Zero Trust Architecture | GovRAMP Authorization | SEC Cybersecurity Disclosure | Board-Level Risk Communication | Incident Response Leadership | M&A Security Due Diligence`
-
-</examples>
-
----
-
-## Guardrails
-
-<guardrails>
-
-- Only integrate skills the candidate genuinely possesses — flag any gaps that cannot be authentically addressed.
-- Prioritize quantifiable achievements over generic duty statements in all rewrites.
-- Remind the user to validate the accuracy of the revised resume before submission.
-- Remove any "References" section from the final resume.
-- Never use A4 page dimensions — always US Letter (12240 × 15840 DXA).
-- Never unicode bullet characters in the .docx — always `LevelFormat.BULLET`.
-
-</guardrails>
-
 ---
 
 ## Iteration
 
-After the user reviews the output, accept targeted revision requests without restarting the full process. If the resume or `.docx` is revised, regenerate the Word file automatically.
+After the user reviews the output, accept targeted revision requests without restarting the full process. When the user specifies which job they want to revise (e.g., "strengthen the Acme resume bullets"), apply changes only to that job's resume and regenerate that job's three output files automatically (resume .docx, report .md, and report .docx).
